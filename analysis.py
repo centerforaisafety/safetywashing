@@ -11,8 +11,8 @@ def load_data():
     """
     Load data from CSV files and return as pandas DataFrames.
     """
-    base_model_df = pd.read_csv('data/B_base_models.csv', index_col='model')
-    chat_model_df = pd.read_csv('data/B_chat_models.csv', index_col='model')
+    base_model_df = pd.read_csv('data/benchmarks_base_models.csv', index_col='model')
+    chat_model_df = pd.read_csv('data/benchmarks_chat_models.csv', index_col='model')
     evals_df = pd.read_csv('data/benchmarks_info.csv', index_col='benchmark')
     return base_model_df, chat_model_df, evals_df
 
