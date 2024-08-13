@@ -10,9 +10,11 @@ This repository contains code and data for the paper ["Safetywashing: Do AI Safe
 
 - `analysis.py`: Main script for running correlation analyses
 - `data/`: Contains benchmark datasets and model results
-  - `B_base_model.csv`: Benchmark matrix for base language models
-  - `B_chat_model.csv`: benchmark matrix for chat/instruction-tuned models
+  - `B_base_models.csv`: Benchmark matrix for base language models
+  - `B_chat_models.csv`: benchmark matrix for chat/instruction-tuned models
   - `benchmarks_info.csv`: Metadata about benchmarks
+
+To add a new benchmark, add a column in the benchmark matrix (with some ``name``), and then add a row in benchmarks_info (with the key as the ``name``).
 
 ## Citation
 

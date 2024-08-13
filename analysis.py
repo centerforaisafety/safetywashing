@@ -11,9 +11,9 @@ def load_data():
     """
     Load data from CSV files and return as pandas DataFrames.
     """
-    base_model_df = pd.read_csv('data/E_base_model.csv', index_col='Unnamed: 0')
-    chat_model_df = pd.read_csv('data/E_chat_model.csv', index_col='Unnamed: 0')
-    evals_df = pd.read_csv('data/evals_info.csv', index_col='Unnamed: 0')
+    base_model_df = pd.read_csv('data/B_base_models.csv', index_col='model')
+    chat_model_df = pd.read_csv('data/B_chat_models.csv', index_col='model')
+    evals_df = pd.read_csv('data/benchmarks_info.csv', index_col='benchmark')
     return base_model_df, chat_model_df, evals_df
 
 def find_nans(model_df):
@@ -55,25 +55,8 @@ def run_analysis(model_df, evals_df, cap_names, label, correlation_type = "spear
     safety_names = [col for col in normalized_df.columns if col not in cap_names]
     df_safety = normalized_df[safety_names].copy() # "safety" evals dataframe
 
-    # Compute correlation matrix
+    # Compute capabilities correlation matrix & statistics of correlations between capabilities benchmarks
     cap_matrix = df_cap.corr(method=correlation_type).to_numpy()
-
-    # Plot correlation matrix
-    fig, ax = plt.subplots(figsize=(9, 9))
-    im = ax.imshow(cap_matrix, cmap="viridis", vmin=-0.5, vmax=1.1)
-    for i in range(len(cap_names)):
-        for j in range(len(cap_names)):
-            ax.text(j, i, f"{(cap_matrix[i, j]*100):.0f}", ha="center", va="center", color="w", fontsize=20)
-    ax.set_xticks(np.arange(len(cap_names)))
-    ax.set_yticks(np.arange(len(cap_names)))
-    ax.set_xticklabels([evals_df.loc[name]["name"] for name in cap_names], fontsize = 18)
-    ax.set_yticklabels([evals_df.loc[name]["name"] for name in cap_names], fontsize = 18)
-    plt.setp(ax.get_xticklabels(), rotation=45, ha="right", rotation_mode="anchor")
-    ax.set_title(label, fontsize=35, pad=15)
-    fig.tight_layout()
-    plt.show()
-
-    # Compute statistics of correlations between two capabilities benchmarks
     triu_indices = np.triu_indices_from(cap_matrix, k=1)
     upper_tri_values = cap_matrix[triu_indices]
     mean_correlation = np.mean(upper_tri_values)
@@ -109,19 +92,20 @@ def run_analysis(model_df, evals_df, cap_names, label, correlation_type = "spear
     variance_explained_pc1 = eigenvals[-1] / np.sum(eigenvals)
 
     # Print analysis results
+    print(f"\n***** Results for {label} *****")
     print(f"Mean correlation between two capabilities benchmarks: {mean_correlation}")
     print(f"Standard deviation of correlation between two capabilities benchmarks: {std_dev_correlation}")
     print(f"Total capabilities variance explained from PC1: {variance_explained_pc1*100:.1f}")
 
     print("\nCAPABILITIES CORRELATIONS:")
     for cap_name in cap_names:
-        print(cap_name, evals_df_copy.loc[cap_name, f"{label}_{correlation_type}_correlations"].round(3) * 100)
+        print(f"{cap_name} {100*evals_df_copy.loc[cap_name, f'{label}_{correlation_type}_correlations']:.2f}")
 
     print("\nSAFETY CORRELATIONS:")
     for safety_name in safety_names:
-        print(safety_name, evals_df_copy.loc[safety_name, f"{label}_{correlation_type}_correlations"].round(3) * 100)
+        print(f"{safety_name} {100*evals_df_copy.loc[safety_name, f'{label}_{correlation_type}_correlations']:.2f}")
 
-    print("\nMODEL G-SCORES")
+    print("\nMODEL SCORES:")
     model_cap_dict = dict(sorted(list(zip(model_df.index, model_cap_score)), key=lambda item: item[1]))
     for k, v in model_cap_dict.items():
         print(f"{k}, {v:.2f}")
@@ -194,6 +178,21 @@ def plot_safety_vs_capabilities(model_df, x_axis, benchmark_name, class_type, y_
     print(f"Pearson Correlation: {pearson_corr}")
     print(f"Spearman Correlation: {spearman_corr}")
 
+def plot_capabilities_correlation_matrix(cap_matrix, label):
+    fig, ax = plt.subplots(figsize=(9, 9))
+    im = ax.imshow(cap_matrix, cmap="viridis", vmin=-0.5, vmax=1.1)
+    for i in range(len(cap_names)):
+        for j in range(len(cap_names)):
+            ax.text(j, i, f"{(cap_matrix[i, j]*100):.0f}", ha="center", va="center", color="w", fontsize=20)
+    ax.set_xticks(np.arange(len(cap_names)))
+    ax.set_yticks(np.arange(len(cap_names)))
+    ax.set_xticklabels([evals_df.loc[name]["name"] for name in cap_names], fontsize = 18)
+    ax.set_yticklabels([evals_df.loc[name]["name"] for name in cap_names], fontsize = 18)
+    plt.setp(ax.get_xticklabels(), rotation=45, ha="right", rotation_mode="anchor")
+    ax.set_title(label, fontsize=35, pad=15)
+    fig.tight_layout()
+    plt.show()
+
 plot_capabilities_score(chat_model_df)
 plot_eigenvalues(base_eigenvals, chat_eigenvals)
 plot_safety_vs_capabilities(
@@ -218,3 +217,5 @@ plot_safety_vs_capabilities(
     title="TruthfulQA MC1", 
     xlim=1
 )
+plot_capabilities_correlation_matrix(chat_cap_matrix, "Chat Capabilities Correlations")
+# %%
