@@ -16,8 +16,6 @@ This repository contains code and data for the paper ["Safetywashing: Do AI Safe
 
 ## Citation
 
-If you use this code or data in your research, please cite our paper:
-
 ```
 @misc{ren2024safetywashing,
       title={Safetywashing: Do AI Safety Benchmarks Actually Measure Safety Progress?}, 
