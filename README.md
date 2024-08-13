@@ -14,7 +14,7 @@ This repository contains code and data for the paper ["Safetywashing: Do AI Safe
   - `B_chat_models.csv`: benchmark matrix for chat/instruction-tuned models
   - `benchmarks_info.csv`: Metadata about benchmarks
 
-To add a new benchmark, add a column in the benchmark matrix (with some ``name``), and then add a row in benchmarks_info (with the key as the ``name``).
+To add a new benchmark, add a column in the benchmark matrix, and then add a row in benchmarks_info.
 
 ## Citation
 
