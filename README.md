@@ -10,9 +10,9 @@ This repository contains code and data for the paper ["Safetywashing: Do AI Safe
 
 - `analysis.py`: Main script for running correlation analyses
 - `data/`: Contains benchmark datasets and model results
-  - `E_base_model.csv`: Results for base language models
-  - `E_chat_model.csv`: Results for chat/instruction-tuned models
-  - `evals_info.csv`: Metadata about evaluation benchmarks
+  - `B_base_model.csv`: Benchmark matrix for base language models
+  - `B_chat_model.csv`: benchmark matrix for chat/instruction-tuned models
+  - `evals_info.csv`: Metadata about benchmarks
 
 ## Citation
 
