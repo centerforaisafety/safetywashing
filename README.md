@@ -2,7 +2,7 @@
 
 [![arXiv](https://img.shields.io/badge/arXiv-2407.21792-b31b1b.svg)](https://arxiv.org/abs/2407.21792)
 
-This repository contains code and data for the paper ["Safetywashing: Do AI Safety Benchmarks Actually Measure Safety Progress?"](https://arxiv.org/abs/2407.21792). This repo provides tools to evaluate AI models on various safety and capabilities benchmarks, and analyze the correlations between these benchmarks.
+This repository contains code and data for the paper ["Safetywashing: Do AI Safety Benchmarks Actually Measure Safety Progress?"](https://arxiv.org/abs/2407.21792).
 
 "Safetywashing" refers to the practice of misrepresenting capabilities improvements as safety advancements in AI systems. This project provides tools to evaluate AI models on various safety and capabilities benchmarks, and analyzes the correlations between these benchmarks. Our goal is to empirically investigate whether common AI safety benchmarks actually measure distinct safety properties or are primarily determined by upstream model capabilities.
 
