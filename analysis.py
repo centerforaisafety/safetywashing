@@ -93,8 +93,8 @@ def run_analysis(model_df, evals_df, cap_names, label, correlation_type = "spear
 
     # Print analysis results
     print(f"\n***** Results for {label} *****")
-    print(f"Mean correlation between two capabilities benchmarks: {mean_correlation}")
-    print(f"Standard deviation of correlation between two capabilities benchmarks: {std_dev_correlation}")
+    print(f"Mean correlation between two capabilities benchmarks: {mean_correlation*100:.1f}")
+    print(f"Standard deviation of correlation between two capabilities benchmarks: {std_dev_correlation*100:.1f}")
     print(f"Total capabilities variance explained from PC1: {variance_explained_pc1*100:.1f}")
 
     print("\nCAPABILITIES CORRELATIONS:")
@@ -103,7 +103,7 @@ def run_analysis(model_df, evals_df, cap_names, label, correlation_type = "spear
 
     print("\nSAFETY CORRELATIONS:")
     for safety_name in safety_names:
-        print(f"{safety_name} {100*evals_df_copy.loc[safety_name, f'{label}_{correlation_type}_correlations']:.2f}")
+        print(f"{safety_name} {100*evals_df_copy.loc[safety_name, f'{label}_{correlation_type}_correlations']:.1f}")
 
     print("\nMODEL SCORES:")
     model_cap_dict = dict(sorted(list(zip(model_df.index, model_cap_score)), key=lambda item: item[1]))
@@ -218,4 +218,3 @@ plot_safety_vs_capabilities(
     xlim=1
 )
 plot_capabilities_correlation_matrix(chat_cap_matrix, "Chat Capabilities Correlations")
-# %%
