@@ -1,3 +1,5 @@
+#%%
+
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -36,9 +38,12 @@ base_model_df, chat_model_df, evals_df = load_data()
 find_nans(base_model_df)
 find_nans(chat_model_df)
 
+#%%
+
+
 ##### RUN ANALYSIS ON BASE AND CHAT MODELS #####
 
-def run_analysis(model_df, evals_df, cap_names, label, correlation_type = "spearman"):
+def run_capabilities_correlations(model_df, evals_df, cap_names, label, correlation_type = "spearman"):
     """
     Runs normalization, computes and plots correlation matrix, performs PCA, and prints analysis results. Returns modified evals_df and model_df, and eigenvalues and correlation matrix from PCA.
 
@@ -116,8 +121,8 @@ def run_analysis(model_df, evals_df, cap_names, label, correlation_type = "spear
 
     return evals_df_copy, model_df_copy, eigenvals, cap_matrix
 
-evals_df, base_model_df, base_eigenvals, base_cap_matrix = run_analysis(base_model_df, evals_df, cap_names, "Base", "spearman")
-evals_df, chat_model_df, chat_eigenvals, chat_cap_matrix = run_analysis(chat_model_df, evals_df, cap_names, "Chat", "spearman")
+evals_df, base_model_df, base_eigenvals, base_cap_matrix = run_capabilities_correlations(base_model_df, evals_df, cap_names, "Base", "spearman")
+evals_df, chat_model_df, chat_eigenvals, chat_cap_matrix = run_capabilities_correlations(chat_model_df, evals_df, cap_names, "Chat", "spearman")
 
 ##### PLOTTING DEMOS #####
 
@@ -218,3 +223,56 @@ plot_safety_vs_capabilities(
     xlim=1
 )
 plot_capabilities_correlation_matrix(chat_cap_matrix, "Chat Capabilities Correlations")
+
+#%%
+
+# New section: FLOP Analysis
+
+def run_compute_correlations(model_df, evals_df, cap_names, label, correlation_type="spearman"):
+    """
+    Runs analysis using FLOP as the compute metric, computes correlations, and prints analysis results.
+    Returns modified evals_df and model_df, and correlation matrix.
+
+    We compute the correlation of each benchmark with FLOP, dropping the rows that contain NaNs for FLOP or the benchmark.
+    """
+
+    # Prepare data
+    analysis_df = model_df.drop(columns=["model_size", "name", "type"])
+    analysis_df = analysis_df.dropna(subset=['FLOP'])  # Drop rows where FLOP is NaN
+    analysis_df = analysis_df.dropna(axis=1, how='all')
+
+    safety_names = [col for col in analysis_df.columns if col not in cap_names and col != 'FLOP']
+
+    # Update dataframes
+    evals_df_copy = evals_df.copy()
+
+    # Compute correlations for each evaluation and update dataframes
+    for benchmark in safety_names + cap_names:
+        benchmark_df = analysis_df[[benchmark, 'FLOP']].dropna()
+        corr_value = benchmark_df.corr(method=correlation_type).to_numpy()[0, 1]
+        evals_df_copy.loc[benchmark, f"{label}_flop_{correlation_type}_correlations"] = corr_value
+
+    # Print analysis results
+    print(f"\n***** Results for {label} (FLOP Analysis) *****")
+
+    print("\nCOMPUTE CORRELATIONS WITH FLOP:")
+    for cap_name in cap_names:
+        print(f"{cap_name} {100*evals_df_copy.loc[cap_name, f'{label}_flop_{correlation_type}_correlations']:.2f}")
+
+    print("\nSAFETY CORRELATIONS WITH FLOP:")
+    for safety_name in safety_names:
+        print(f"{safety_name} {100*evals_df_copy.loc[safety_name, f'{label}_flop_{correlation_type}_correlations']:.1f}")
+
+    print("\nMODEL FLOPS:")
+    model_flop_dict = dict(sorted(list(zip(analysis_df.index, analysis_df['FLOP'])), key=lambda item: item[1]))
+    for k, v in model_flop_dict.items():
+        print(f"{k}, {v:.2e}")
+
+    # Update model dataframe
+    model_df_copy = model_df.copy()
+
+    return evals_df_copy, model_df_copy#, cap_matrix
+
+evals_df, base_model_df, base_cap_matrix = run_compute_correlations(base_model_df, evals_df, cap_names, "Base", "spearman")
+evals_df, chat_model_df, chat_cap_matrix = run_compute_correlations(chat_model_df, evals_df, cap_names, "Chat", "spearman")
+# %%
