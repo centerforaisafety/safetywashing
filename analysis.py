@@ -273,6 +273,6 @@ def run_compute_correlations(model_df, evals_df, cap_names, label, correlation_t
 
     return evals_df_copy, model_df_copy#, cap_matrix
 
-evals_df, base_model_df, base_cap_matrix = run_compute_correlations(base_model_df, evals_df, cap_names, "Base", "spearman")
-evals_df, chat_model_df, chat_cap_matrix = run_compute_correlations(chat_model_df, evals_df, cap_names, "Chat", "spearman")
+evals_df, base_model_df = run_compute_correlations(base_model_df, evals_df, cap_names, "Base", "spearman")
+evals_df, chat_model_df = run_compute_correlations(chat_model_df, evals_df, cap_names, "Chat", "spearman")
 # %%
